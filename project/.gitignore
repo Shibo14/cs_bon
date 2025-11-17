@@ -1,0 +1,17 @@
+node_modules/
+.env
+*.log
+.DS_Store
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+dist/
+build/
+coverage/
+.nyc_output/
+steam-bot/*.json
+steam-bot/sentry/
+steam-bot/polldata/
+*.db

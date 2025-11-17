@@ -1,0 +1,13 @@
+{
+  "name": "telegram-case-opener-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Telegram CS:GO Case Opener",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}

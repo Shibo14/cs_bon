@@ -1,0 +1,39 @@
+{
+  "name": "telegram-steam-case-opener",
+  "version": "1.0.0",
+  "description": "Telegram Mini App for CS:GO skin case opening with Steam trading",
+  "main": "index.js",
+  "scripts": {
+    "backend": "cd backend && node app.js",
+    "bot": "cd steam-bot && node bot.js",
+    "dev": "concurrently \"npm run backend\" \"npm run bot\"",
+    "fetch-skins": "node scripts/fetch_skins.js"
+  },
+  "keywords": [
+    "telegram",
+    "steam",
+    "csgo",
+    "case-opening",
+    "trading"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.6.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "crypto": "^1.0.1",
+    "axios": "^1.6.0",
+    "steam-user": "^4.29.1",
+    "steamcommunity": "^3.47.0",
+    "steam-tradeoffer-manager": "^2.10.8",
+    "steam-totp": "^2.1.1",
+    "body-parser": "^1.20.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.1"
+  }
+}

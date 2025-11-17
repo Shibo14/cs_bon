@@ -1,0 +1,12 @@
+{
+  "name": "steam-trade-bot",
+  "version": "1.0.0",
+  "description": "Steam Trading Bot for CS:GO items",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}

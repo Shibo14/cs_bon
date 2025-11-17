@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: telegram-case-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: telegram_case_opener
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../Dockerfile.backend
+    container_name: telegram-case-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      NODE_ENV: production
+      MONGODB_URI: mongodb://admin:password@mongodb:27017/telegram_case_opener?authSource=admin
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      DEFAULT_CRYSTALS: 100
+      CASE_OPENING_COST: 10
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+
+  steam-bot:
+    build:
+      context: ./steam-bot
+      dockerfile: ../Dockerfile.steambot
+    container_name: telegram-case-steambot
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      MONGODB_URI: mongodb://admin:password@mongodb:27017/telegram_case_opener?authSource=admin
+      STEAM_USERNAME: ${STEAM_USERNAME}
+      STEAM_PASSWORD: ${STEAM_PASSWORD}
+      STEAM_SHARED_SECRET: ${STEAM_SHARED_SECRET}
+      STEAM_IDENTITY_SECRET: ${STEAM_IDENTITY_SECRET}
+      STEAM_API_KEY: ${STEAM_API_KEY}
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge

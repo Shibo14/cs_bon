@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CS:GO Case Opener</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .case-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .case-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .skin-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .opening-animation {
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .skin-reveal {
+            animation: reveal 0.5s ease-out;
+        }
+
+        @keyframes reveal {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .tab-active {
+            border-bottom: 2px solid #667eea;
+            color: #667eea;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .rarity-covert {
+            border-color: #eb4b4b !important;
+            box-shadow: 0 0 20px rgba(235, 75, 75, 0.3);
+        }
+
+        .rarity-classified {
+            border-color: #d32ce6 !important;
+            box-shadow: 0 0 20px rgba(211, 44, 230, 0.3);
+        }
+
+        .rarity-restricted {
+            border-color: #8847ff !important;
+            box-shadow: 0 0 20px rgba(136, 71, 255, 0.3);
+        }
+
+        .rarity-mil-spec {
+            border-color: #4b69ff !important;
+            box-shadow: 0 0 20px rgba(75, 105, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="text-white min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg p-4 sticky top-0 z-50 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">CS:GO Cases</h1>
+            <div class="flex items-center gap-4">
+                <div class="bg-white bg-opacity-20 rounded-lg px-4 py-2">
+                    <span class="text-sm">💎</span>
+                    <span id="crystalBalance" class="font-bold ml-2">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-black bg-opacity-30 p-2 sticky top-16 z-40">
+        <div class="container mx-auto flex gap-2 overflow-x-auto">
+            <button onclick="showScreen('home')" class="tab px-4 py-2 rounded-lg tab-active whitespace-nowrap">Home</button>
+            <button onclick="showScreen('cases')" class="tab px-4 py-2 rounded-lg whitespace-nowrap">Cases</button>
+            <button onclick="showScreen('inventory')" class="tab px-4 py-2 rounded-lg whitespace-nowrap">Inventory</button>
+            <button onclick="showScreen('buy')" class="tab px-4 py-2 rounded-lg whitespace-nowrap">Buy Crystals</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-4 pb-20">
+        <!-- Home Screen -->
+        <div id="screen-home" class="screen">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold mb-2">Welcome to CS:GO Cases</h2>
+                <p class="text-gray-300">Open cases and win amazing skins!</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div class="case-card rounded-lg p-6 text-center">
+                    <div class="text-4xl mb-2">💎</div>
+                    <h3 class="text-xl font-bold mb-2">Your Balance</h3>
+                    <p class="text-3xl font-bold text-yellow-400" id="homeBalance">0</p>
+                </div>
+                <div class="case-card rounded-lg p-6 text-center">
+                    <div class="text-4xl mb-2">🎁</div>
+                    <h3 class="text-xl font-bold mb-2">Items Won</h3>
+                    <p class="text-3xl font-bold text-green-400" id="homeItemsCount">0</p>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button onclick="showScreen('cases')" class="btn-primary px-8 py-4 rounded-lg text-lg font-bold">
+                    Start Opening Cases
+                </button>
+            </div>
+        </div>
+
+        <!-- Cases Screen -->
+        <div id="screen-cases" class="screen hidden">
+            <h2 class="text-2xl font-bold mb-6">Available Cases</h2>
+            <div id="casesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Cases will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Inventory Screen -->
+        <div id="screen-inventory" class="screen hidden">
+            <h2 class="text-2xl font-bold mb-6">Your Inventory</h2>
+
+            <!-- Steam Trade URL Setup -->
+            <div id="tradeUrlSetup" class="case-card rounded-lg p-6 mb-6 hidden">
+                <h3 class="text-xl font-bold mb-4">Set Your Steam Trade URL</h3>
+                <p class="text-gray-300 mb-4">To withdraw items, please set your Steam trade URL first.</p>
+                <input type="text" id="tradeUrlInput" placeholder="https://steamcommunity.com/tradeoffer/new/?partner=..."
+                       class="w-full bg-white bg-opacity-10 rounded-lg px-4 py-3 mb-4 border border-white border-opacity-20">
+                <button onclick="saveSteamTradeUrl()" class="btn-primary px-6 py-3 rounded-lg font-bold w-full">
+                    Save Trade URL
+                </button>
+            </div>
+
+            <div id="inventoryList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Inventory items will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Buy Crystals Screen -->
+        <div id="screen-buy" class="screen hidden">
+            <h2 class="text-2xl font-bold mb-6">Buy Crystals</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="case-card rounded-lg p-6 text-center">
+                    <div class="text-4xl mb-4">💎</div>
+                    <h3 class="text-2xl font-bold mb-2">100 Crystals</h3>
+                    <p class="text-gray-300 mb-4">$1.99</p>
+                    <button onclick="buyCrystals(100, 'uzcard')" class="btn-primary px-6 py-3 rounded-lg font-bold w-full mb-2">
+                        UzCard
+                    </button>
+                    <button onclick="buyCrystals(100, 'click')" class="bg-blue-600 px-6 py-3 rounded-lg font-bold w-full mb-2">
+                        Click
+                    </button>
+                    <button onclick="buyCrystals(100, 'stars')" class="bg-yellow-600 px-6 py-3 rounded-lg font-bold w-full">
+                        ⭐ Stars
+                    </button>
+                </div>
+
+                <div class="case-card rounded-lg p-6 text-center">
+                    <div class="text-4xl mb-4">💎</div>
+                    <h3 class="text-2xl font-bold mb-2">500 Crystals</h3>
+                    <p class="text-gray-300 mb-4">$8.99</p>
+                    <button onclick="buyCrystals(500, 'uzcard')" class="btn-primary px-6 py-3 rounded-lg font-bold w-full mb-2">
+                        UzCard
+                    </button>
+                    <button onclick="buyCrystals(500, 'click')" class="bg-blue-600 px-6 py-3 rounded-lg font-bold w-full mb-2">
+                        Click
+                    </button>
+                    <button onclick="buyCrystals(500, 'stars')" class="bg-yellow-600 px-6 py-3 rounded-lg font-bold w-full">
+                        ⭐ Stars
+                    </button>
+                </div>
+
+                <div class="case-card rounded-lg p-6 text-center">
+                    <div class="text-4xl mb-4">💎</div>
+                    <h3 class="text-2xl font-bold mb-2">1000 Crystals</h3>
+                    <p class="text-gray-300 mb-4">$15.99</p>
+                    <button onclick="buyCrystals(1000, 'uzcard')" class="btn-primary px-6 py-3 rounded-lg font-bold w-full mb-2">
+                        UzCard
+                    </button>
+                    <button onclick="buyCrystals(1000, 'click')" class="bg-blue-600 px-6 py-3 rounded-lg font-bold w-full mb-2">
+                        Click
+                    </button>
+                    <button onclick="buyCrystals(1000, 'stars')" class="bg-yellow-600 px-6 py-3 rounded-lg font-bold w-full">
+                        ⭐ Stars
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Case Opening Modal -->
+    <div id="openingModal" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex items-center justify-center">
+        <div class="text-center">
+            <div id="openingSpinner" class="opening-animation text-6xl mb-4">🎁</div>
+            <p class="text-2xl font-bold">Opening case...</p>
+        </div>
+    </div>
+
+    <!-- Result Modal -->
+    <div id="resultModal" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex items-center justify-center p-4">
+        <div class="skin-card rounded-lg p-8 max-w-md w-full text-center skin-reveal">
+            <h2 class="text-3xl font-bold mb-4">You Won!</h2>
+            <img id="wonSkinImage" src="" alt="Won Skin" class="w-full max-w-xs mx-auto mb-4 rounded-lg">
+            <h3 id="wonSkinName" class="text-2xl font-bold mb-2"></h3>
+            <p id="wonSkinPrice" class="text-xl text-yellow-400 mb-6"></p>
+            <button onclick="closeResultModal()" class="btn-primary px-8 py-3 rounded-lg font-bold w-full">
+                Awesome!
+            </button>
+        </div>
+    </div>
+
+    <script src="scripts/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install --production
+
+# Copy application files
+COPY steam-bot ./steam-bot
+COPY backend/models ./backend/models
+
+WORKDIR /app/steam-bot
+
+CMD ["node", "bot.js"]
